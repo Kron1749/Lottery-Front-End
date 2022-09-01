@@ -14,7 +14,12 @@ export default function LotteryEntrance() {
     const [minimumValue, setMinimumValue] = useState("0")
     const [numPlayers, setNumPlayers] = useState("0")
     const [recentWinner, setRecentWinner] = useState("0")
-    const { runContractFunction: enterTheLottery } = useWeb3Contract({
+
+    const {
+        runContractFunction: enterTheLottery,
+        isLoading,
+        isFetching,
+    } = useWeb3Contract({
         abi: abi,
         contractAddress: lotteryAddress,
         functionName: "enterTheLottery",
@@ -78,24 +83,32 @@ export default function LotteryEntrance() {
     }
 
     return (
-        <div>
+        <div className="p-5">
             Lottery entrance
             {lotteryAddress ? (
                 <div>
                     <button
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-auto"
                         onClick={async function () {
                             await enterTheLottery({
                                 onSuccess: handleSuccess,
                                 onError: (error) => console.log(error),
                             })
                         }}
+                        disabled={isLoading || isFetching}
                     >
-                        Enter Lottery
+                        {isLoading || isFetching ? (
+                            <div className="animate-spin spinner-border h-8 w-8 border-b-2 rounded-full"></div>
+                        ) : (
+                            <div>Enter Lottery</div>
+                        )}
                     </button>
-                    Entrance Fee{" "}
-                    {ethers.utils.formatUnits(minimumValue, "ether")} ETH Number
-                    of Players: {numPlayers}
-                    Recent winner: {recentWinner}
+                    <div>
+                        Entrance Fee{" "}
+                        {ethers.utils.formatUnits(minimumValue, "ether")} ETH
+                    </div>
+                    <div>Number of Players: {numPlayers}</div>
+                    <div>Recent winner: {recentWinner}</div>
                 </div>
             ) : (
                 <div>No lottery address detected</div>
